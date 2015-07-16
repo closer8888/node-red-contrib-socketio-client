@@ -1,0 +1,31 @@
+{
+  "name": "node-red-contrib-socketio-client",
+  "version": "0.0.1",
+  "author": {
+    "name": "Bobby Polis",
+    "email": "bpolis@sitscape.com"
+  },
+  "description": "Socket-io client in and out nodes for Node-RED",
+  "dependencies": {
+    
+  },
+  "keywords": [
+    "node-red",
+    "socketid"
+  ],
+  "node-red": {
+    "nodes": {
+      "socketio-client": "nodes/socketio-client-node-red.js"
+    }
+  },
+  "homepage": "https://sitscape.com",
+  "_id": "node-red-contrib-socketio-client@0.0.1",
+  "scripts": {},
+  "maintainers": [
+    {
+      "name": "sitscape",
+      "email": "bpolis@sitscape.com"
+    }
+  ],
+  "directories": {}
+}

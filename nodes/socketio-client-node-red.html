@@ -1,0 +1,175 @@
+<!--
+
+-->
+<script type="text/javascript">
+function sio_oneditprepare(){
+    $("#node-input-allChannels").change(function(ev){
+        if($("#node-input-allChannels").is(':checked')){
+            $("#node-input-channel").attr("disabled", "disabled");
+//            this.allChannels = true;
+        }else{
+            $("#node-input-channel").removeAttr("disabled");
+//            this.allChannels = false;
+        }
+    });
+    
+    if(this.allChannels) {
+        $("#node-input-allChannels").prop("checked", true).change();
+    }
+    else {
+        $("#node-input-allChannels").prop("checked", false).change();
+    }
+}
+function sio_label() {
+//    var nodeid = (this.client)?this.client:this.server;
+//    var sioNode = RED.nodes.node(nodeid);
+    return this.name|| "Socket.IO"; //(wsNode?"[ws] "+wsNode.label():"websocket");
+}
+</script>
+<!-- WebSocket Input Node -->
+<script type="text/x-red" data-template-name="socketio in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" id="socketio-client-row">
+        <label for="node-input-client"><i class="fa fa-bookmark"></i> URL</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-allChannels" style="display:inline-block;width:auto;vertical-align:top"/>
+        <label for="node-input-allChannels" style="width:70%">All Channels</label>
+        
+        <label for="node-input-channel">Channel</label>
+        <input type="text" id="node-input-channel">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="socketio in">
+    <p>Socket.io input node.</p>
+    <p>By default, the data received from the socket will be in <b>msg.payload</b>.
+    The socket can be configured to expect a properly formed JSON string, in which
+    case it will parse the JSON and send on the resulting object as the entire message.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('socketio in',{
+        category: 'input',
+        defaults: {
+            name: {value:""},
+            client: {value:"",type:"socketio-client"},
+            allChannels: {value:false},
+            channel:{value:""}
+        },
+        color:"rgb(215, 215, 160)",
+        inputs:0,
+        outputs:1,
+        icon: "white-globe.png",
+        label: sio_label,
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare : sio_oneditprepare
+    });
+</script>
+
+<!-- WebSocket out Node -->
+<script type="text/x-red" data-template-name="socketio out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row" id="socketio-client-row">
+        <label for="node-input-client"><i class="fa fa-bookmark"></i> URL</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-allChannels" style="display:inline-block;width:auto;vertical-align:top"/>
+        <label for="node-input-allChannels" style="width:70%">All Channels</label>
+        
+        <label for="node-input-channel">Channel</label>
+        <input type="text" id="node-input-channel">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="socketio out">
+    <p>Socket.io out node.</p>
+    <p>By default, <b>msg.payload</b> will be sent over the WebSocket. The socket
+    can be configured to encode the entire message object as a JSON string and send that
+    over the WebSocket.</p>
+
+    <p>If the message arriving at this node started at a WebSocket In node, the message
+    will be sent back to the client that triggered the flow. Otherwise, the message
+    will be broadcast to all connected clients.</p>
+    <p>If you want to broadcast a message that started at a WebSocket In node, you
+    should delete the <b>msg._session</b> property within the flow</p>.
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('socketio out',{
+        category: 'output',
+        defaults: {
+            name: {value:""},
+            client: {value:"",type:"socketio-client"},
+            allChannels: {value:""},
+            channel:{value:""}
+        },
+        color:"rgb(215, 215, 160)",
+        inputs:1,
+        outputs:0,
+        icon: "white-globe.png",
+        align: "right",
+        label: sio_label,
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare : sio_oneditprepare
+    });
+</script>
+
+<!-- Socketio Client configuration node -->
+<script type="text/x-red" data-template-name="socketio-client">
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-bookmark"></i>Host URL</label>
+        <input type="text" id="node-config-input-host" placeholder="https://example.com:80">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-path"><i class="fa fa-bookmark"></i>Path or namespace</label>
+        <input type="text" id="node-config-input-path" placeholder="/ssb/socketio">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-wholemsg">&nbsp;</label>
+        <select type="text" id="node-config-input-wholemsg" style="width: 70%;">
+            <option value="false">Send/Receive payload</option>
+            <option value="true">Send/Receive entire message</option>
+        </select>
+    </div>
+    <div class="form-tips">
+    <p>URL should use http:&#47;&#47; or https:&#47;&#47; scheme and point to an existing socketio entry point.</p>
+    Socketio will take care of upgrading the connection to a ws:&#47;&#47; or wss:&#47;&#47; connection.
+    By default, <code>payload</code> will contain the data to be sent over, or received from a websocket.
+    The client can be configured to send or receive the entire message object as a JSON formatted string.
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="socketio-client">
+   <p>This configuration node connects a Socket.io client to the specified URL.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('socketio-client',{
+        category: 'config',
+        defaults: {
+            host: {value:"",required:true,validate:RED.validators.regex(/^((?!\/debug\/ws).)*$/) },
+            path: {value:"",required:true},
+            wholemsg: {value:"false"}
+        },
+        inputs:0,
+        outputs:0,
+        label: function() {
+            return this.path;
+        }
+    });
+</script>
